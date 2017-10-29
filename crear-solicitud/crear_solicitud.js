@@ -28,10 +28,7 @@ $('input[id ^=hora_fin]').click(function () {
 });
 
 $('#enviar').click(function () {
-    
-    $('#ico-enviando').append('Enviando ... <i class="fa fa-spinner fa-spin" style="font-size:24px"></i>');
-    $('#enviar').attr("disabled", true);
-    
+
     var datos = {
         responsable: $('#responsable').val(),
         institucion: $('#institucion').val(),
@@ -43,19 +40,49 @@ $('#enviar').click(function () {
         hora_fin: $('#hora_fin').val(),
         descripcion: $('#descripcion').val()
     };
-    
-    if (datos['responsable'] === '' || datos['telefono'] === '' || datos['correo'] === '' ||
+
+    if (!validar(datos.correo)) {
+        mostrarMensaje('alert-danger', 'Correo invalido! :( Por favor ingrese un correo valido.');
+    } else if (!validarNumeroDeTelefono(datos.telefono)){
+        mostrarMensaje('alert-danger', 'Telefono invalido! :( Por favor ingrese un numero de telefono valido.');
+    } else if (datos['responsable'] === '' || datos['telefono'] === '' || datos['correo'] === '' ||
             datos['evento'] === '' || datos['fecha'] === null || datos['hora_inicio'] === '' || 
             datos['hora_fin'] === '') {
         
         mostrarMensaje('alert-danger', 'Debe rellenar todos los campos obligatorios');
-    }
-    else {
+    } else {
         datos.fecha = formatearFecha(datos.fecha).split(' ')[0];
-        
         ajaxPost('guardar_solicitud.php', datos, manejarGuardarSolicitud);
+        $('#ico-enviando').append('Enviando ... <i class="fa fa-spinner fa-spin" style="font-size:24px"></i>');
+        $('#enviar').attr("disabled", true);
     }
 });
+
+function esEntero(numeroDeTelefono) {
+    var re = /^\d*[1-9]\d*$/;
+    return re.test(numeroDeTelefono)
+}
+function validarCorreo(email) {
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+}
+
+function validar(correo) {
+    if (validarCorreo(correo)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+function validarNumeroDeTelefono(numeroDeTelefono) {
+    if (esEntero(numeroDeTelefono)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
 
 function manejarGuardarSolicitud(respuesta) {
             
