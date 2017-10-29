@@ -106,52 +106,53 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     header('Content-Type: application/json');
     $conectado = ConexionBD::conectar();
     $entrada = $_POST;
-    
-    $fecha = Validador::desinfectarEntrada($entrada['fecha']);
-    $horaInicio= Validador::desinfectarEntrada($entrada['hora_inicio']);
-    $horaFin= Validador::desinfectarEntrada($entrada['hora_fin']);
-    $responsable=Validador::desinfectarEntrada($entrada['responsable']);
-    $institucion= Validador::desinfectarEntrada($entrada['institucion']);
-    $evento= Validador::desinfectarEntrada($entrada['evento']);
-    $descripcion= Validador::desinfectarEntrada($entrada['descripcion']);
-    $telefono= Validador::desinfectarEntrada($entrada['telefono']);
-    $direccionCorreo= Validador::desinfectarEntrada($entrada['correo']);
-    
-    try {
-        $mensajeContenido = 'El Código de su Solicitud de Reserva es: ';
-        $asunto =  'Solicitud de Reserva';
-        
-        $insertado = insertarSolicitudDeReserva($fecha, $horaInicio, $horaFin, $responsable, $institucion, $telefono, $direccionCorreo, $evento, $descripcion);
-        
-        $smtpMailer = false;
-        if ($smtpMailer) {
-            if ($insertado != null) {
-                $codigoGenerado = $insertado * 177;
-                $insertado = true;
-                $message = $mensajeContenido.$codigoGenerado;
-                $mensajeEnviado = MyMailer::sendMailSMTP($direccionCorreo, $message);
-                echo json_encode(["exito" => true, "mail"=> $mensajeEnviado]);
+
+    if ($conectado) {
+        $fecha = Validador::desinfectarEntrada($entrada['fecha']);
+        $horaInicio= Validador::desinfectarEntrada($entrada['hora_inicio']);
+        $horaFin= Validador::desinfectarEntrada($entrada['hora_fin']);
+        $responsable=Validador::desinfectarEntrada($entrada['responsable']);
+        $institucion= Validador::desinfectarEntrada($entrada['institucion']);
+        $evento= Validador::desinfectarEntrada($entrada['evento']);
+        $descripcion= Validador::desinfectarEntrada($entrada['descripcion']);
+        $telefono= Validador::desinfectarEntrada($entrada['telefono']);
+        $direccionCorreo= Validador::desinfectarEntrada($entrada['correo']);
+        try {
+            $mensajeContenido = 'El Código de su Solicitud de Reserva es: ';
+            $asunto =  'Solicitud de Reserva';
+
+            $insertado = insertarSolicitudDeReserva($fecha, $horaInicio, $horaFin, $responsable, $institucion, $telefono, $direccionCorreo, $evento, $descripcion);
+
+            $smtpMailer = false;
+            if ($smtpMailer) {
+                if ($insertado != null) {
+                    $codigoGenerado = $insertado * 177;
+                    $insertado = true;
+                    $message = $mensajeContenido.$codigoGenerado;
+                    $mensajeEnviado = MyMailer::sendMailSMTP($direccionCorreo, $message);
+                    echo json_encode(["exito" => true, "mail"=> $mensajeEnviado]);
+                }
+                else {
+                    echo json_encode(["exito" => false, "mail"=> false]);
+                }
             }
             else {
-                echo json_encode(["exito" => false, "mail"=> false]);
+                if ($insertado != null) {
+                    $codigoGenerado = $insertado * 177;
+                    $insertado = true;
+                    $message = $mensajeContenido.$codigoGenerado;
+                    $mensajeEnviado = MyMailer::sendMailPhpMailer($direccionCorreo, $message);
+                    echo json_encode(["exito" => true, "mail"=> $mensajeEnviado]);
+                }
+                else {
+                    echo json_encode(["exito" => false, "mail"=> false]);
+                }
             }
+        } catch (ValidacionExcepcion $ex) {
+            echo json_encode(['exito' => false, 'error' => $ex->getMessage()]);
         }
-        else {
-            if ($insertado != null) {
-                $codigoGenerado = $insertado * 177;
-                $insertado = true;
-                $message = $mensajeContenido.$codigoGenerado;
-                $mensajeEnviado = MyMailer::sendMailPhpMailer($direccionCorreo, $message);
-                echo json_encode(["exito" => true, "mail"=> $mensajeEnviado]);
-            }
-            else {
-                echo json_encode(["exito" => false, "mail"=> false]);
-            }
-        }
-    }
-    catch (ValidacionExcepcion $ex) {
-        
-        echo json_encode(['exito' => false, 'error' => $ex->getMessage()]);
+    } else {
+        echo json_encode(['exito' => false, 'error' => 'Error accediendo a la base de datos, por favor contacte al administrador']);
     }
 }
 else {
