@@ -2,7 +2,9 @@
 const RAIZ = '..'; 
 include_once RAIZ .'/lib/sesion_store.php';
 include_once RAIZ .'/lib/funciones_privilegios.php';
-bloquearCrearUsuarios();
+
+// Quitar el comentario para bloquear el acceso
+//bloquearCrearUsuarios();
 ?>
 <!DOCTYPE html>
 <html>

@@ -3,7 +3,8 @@ const RAIZ = '..';
 include_once RAIZ .'/lib/sesion_store.php';
 include_once RAIZ .'/lib/funciones_privilegios.php';
 
-bloquearIniciarSesion();
+// Quitar el comentario para bloquear el acceso
+//bloquearIniciarSesion();
 ?>
 <!DOCTYPE html>
 <html>
