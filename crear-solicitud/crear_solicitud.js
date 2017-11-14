@@ -88,7 +88,7 @@ function manejarGuardarSolicitud(respuesta) {
             
     if (respuesta.exito) {
         var msgExito ='La solicitud de reserva fue enviada con exito. \n';
-        msgExito += 'Acabamos de enviar un codigo de solicitud a su correo, puede consultar el estado de su solicitud en cualquier momento';
+        msgExito += 'Este es su codigo de reserva '+ respuesta.codigo + ' , puede consultar el estado de su solicitud en cualquier momento';
         mostrarMensaje('alert-success', msgExito );
         $('#responsable').val("");
         $('#institucion').val("");
