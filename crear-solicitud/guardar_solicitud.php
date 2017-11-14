@@ -142,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $insertado = true;
                     $message = $mensajeContenido.$codigoGenerado;
                     $mensajeEnviado = MyMailer::sendMailPhpMailer($direccionCorreo, $message);
-                    echo json_encode(["exito" => true, "mail"=> $mensajeEnviado]);
+                    echo json_encode(["exito" => true, "mail"=> $mensajeEnviado, "codigo" => $message]);
                 }
                 else {
                     echo json_encode(["exito" => false, "mail"=> false]);
